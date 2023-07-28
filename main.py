@@ -8,8 +8,8 @@
 '''
 from random import randint
 
-rows = 5
-columns  = 5
+rows = randint(5, 11)
+columns  = rows
 
 pos_x = randint(0, (columns - 1))
 pos_y = randint(0, (rows - 1))
@@ -19,6 +19,26 @@ exit_x = randint(0, (columns - 1))
 exit_y = randint(0, (rows - 1))
 
 turns = 0
+
+
+def generate_map(pos_x, pos_y, char_sign, 
+                 exit_x, exit_y, 
+                 rows=rows, columns=columns):
+
+    game_map = ''
+    for j in range(rows):
+        row = '|'
+        for i in range(columns):
+            if i == pos_x and j == pos_y:
+                row += f'{char_sign}|'
+            elif i == exit_x and j == exit_y:
+                row += 'O|'
+            else: 
+                row += ' |'
+        game_map += f"{row}\n"
+
+    return game_map
+
 
 def move(direction, x, y, rows=rows, columns=columns):
 
@@ -34,21 +54,10 @@ def move(direction, x, y, rows=rows, columns=columns):
     return(x, y)
 
 while True:
-    game_map = ''
     win_condition = pos_x == exit_x and pos_y == exit_y
     if win_condition:
         char_sign = 'W'
-    for j in range(rows):
-        row = '|'
-        for i in range(columns):
-            if i == pos_x and j == pos_y:
-                row += f'{char_sign}|'
-            elif i == exit_x and j == exit_y:
-                row += 'O|'
-            else: 
-                row += ' |'
-
-        game_map += f"{row}\n"
+    game_map = generate_map(pos_x, pos_y, char_sign, exit_x, exit_y)
     print(game_map)
     if win_condition:
         print(f'YOU WIN!!! in {turns} turns')
