@@ -54,6 +54,7 @@ def move(direction, x, y, rows=rows, columns=columns):
     return(x, y)
 
 while True:
+
     win_condition = pos_x == exit_x and pos_y == exit_y
     if win_condition:
         char_sign = 'W'
