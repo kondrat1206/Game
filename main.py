@@ -6,7 +6,7 @@
 | | | | |O|
 
 '''
-from random import randint
+from random import randint, choice
 
 rows = randint(5, 11)
 columns  = rows
@@ -15,10 +15,28 @@ pos_x = randint(0, (columns - 1))
 pos_y = randint(0, (rows - 1))
 char_sign = 'X'
 
+enemy_x = randint(0, (columns - 1))
+enemy_y = randint(0, (rows - 1))
+enemy_sign = 'E'
+
 exit_x = randint(0, (columns - 1))
 exit_y = randint(0, (rows - 1))
 
 turns = 0
+
+
+def check_condition(pos_x, pos_y, 
+                    exit_x,exit_y, 
+                    enemy_x, enemy_y, turns=turns, char_sign=char_sign):
+    win_condition = pos_x == exit_x and pos_y == exit_y
+    loss_condition = pos_x == enemy_x and pos_y == enemy_y
+    if win_condition:
+        char_sign = 'W'
+        print(f'YOU WIN!!! in {turns} turns')
+    if loss_condition:
+        char_sign = 'L'
+        print(f'YOU LOSS!!! in {turns} turns')
+    return char_sign, win_condition or loss_condition
 
 
 def generate_map(pos_x, pos_y, char_sign, 
@@ -33,6 +51,8 @@ def generate_map(pos_x, pos_y, char_sign,
                 row += f'{char_sign}|'
             elif i == exit_x and j == exit_y:
                 row += 'O|'
+            elif i == enemy_x and j == enemy_y:
+                row += 'E|'
             else: 
                 row += ' |'
         game_map += f"{row}\n"
@@ -55,16 +75,18 @@ def move(direction, x, y, rows=rows, columns=columns):
 
 while True:
 
-    win_condition = pos_x == exit_x and pos_y == exit_y
-    if win_condition:
-        char_sign = 'W'
+    char_sign, exit_flag = check_condition(pos_x, pos_y, 
+                                           exit_x,exit_y, 
+                                           enemy_x, enemy_y, turns)
+    
+    
     game_map = generate_map(pos_x, pos_y, char_sign, exit_x, exit_y)
     print(game_map)
-    if win_condition:
-        print(f'YOU WIN!!! in {turns} turns')
+    if exit_flag:
         break
+    
     direction = input('Enter direction (U/D/L/R): ')
-    turns += 1
     pos_x, pos_y = move(direction, pos_x, pos_y)
-    
-    
+    turns += 1
+    enemy_direction = choice('udrl')
+    enemy_x, enemy_y = move(enemy_direction, enemy_x, enemy_y)
