@@ -11,23 +11,10 @@ from random import randint, choice
 rows = randint(5, 11)
 columns  = rows
 
-pos_x = randint(0, (columns - 1))
-pos_y = randint(0, (rows - 1))
-char_sign = 'X'
-
-enemy_x = randint(0, (columns - 1))
-enemy_y = randint(0, (rows - 1))
-enemy_sign = 'E'
-
-exit_x = randint(0, (columns - 1))
-exit_y = randint(0, (rows - 1))
-
-turns = 0
-
 
 def check_condition(pos_x, pos_y, 
                     exit_x,exit_y, 
-                    enemy_x, enemy_y, turns=turns, char_sign=char_sign):
+                    enemy_x, enemy_y, turns, char_sign):
     win_condition = pos_x == exit_x and pos_y == exit_y
     loss_condition = pos_x == enemy_x and pos_y == enemy_y
     if win_condition:
@@ -73,11 +60,34 @@ def move(direction, x, y, rows=rows, columns=columns):
     
     return(x, y)
 
+
+def print_map(game_map):
+    for row in game_map:
+        print(f'|{"|".join(row)}|')
+
+
+pos_x = randint(0, (columns - 1))
+pos_y = randint(0, (rows - 1))
+char_sign = 'X'
+
+enemy_x = randint(0, (columns - 1))
+enemy_y = randint(0, (rows - 1))
+enemy_sign = 'E'
+
+exit_x = randint(0, (columns - 1))
+exit_y = randint(0, (rows - 1))
+exit_sign = 'O'
+
+objects = {}
+
+turns = 0
+
+
 while True:
 
     char_sign, exit_flag = check_condition(pos_x, pos_y, 
                                            exit_x,exit_y, 
-                                           enemy_x, enemy_y, turns)
+                                           enemy_x, enemy_y, turns, char_sign)
     
     
     game_map = generate_map(pos_x, pos_y, char_sign, exit_x, exit_y)
