@@ -27,22 +27,21 @@ def check_condition(pos_x, pos_y,
 
 
 def generate_map(pos_x, pos_y, char_sign, 
-                 exit_x, exit_y, 
+                 exit_x, exit_y, exit_sign, 
+                 enemy_x, enemy_y, enemy_sign, 
                  rows=rows, columns=columns):
 
-    game_map = ''
+    game_map = []
     for j in range(rows):
-        row = '|'
+        row = []
         for i in range(columns):
-            if i == pos_x and j == pos_y:
-                row += f'{char_sign}|'
-            elif i == exit_x and j == exit_y:
-                row += 'O|'
-            elif i == enemy_x and j == enemy_y:
-                row += 'E|'
-            else: 
-                row += ' |'
-        game_map += f"{row}\n"
+            row.append(' ')
+
+        game_map.append(row)
+
+    game_map[exit_y][exit_x] = exit_sign
+    game_map[enemy_y][enemy_x] = enemy_sign
+    game_map[pos_y][pos_x] = char_sign
 
     return game_map
 
@@ -78,8 +77,6 @@ exit_x = randint(0, (columns - 1))
 exit_y = randint(0, (rows - 1))
 exit_sign = 'O'
 
-objects = {}
-
 turns = 0
 
 
@@ -90,8 +87,11 @@ while True:
                                            enemy_x, enemy_y, turns, char_sign)
     
     
-    game_map = generate_map(pos_x, pos_y, char_sign, exit_x, exit_y)
-    print(game_map)
+    game_map = generate_map(pos_x, pos_y, char_sign, 
+                            exit_x, exit_y, exit_sign, 
+                            enemy_x, enemy_y, enemy_sign)
+    #print(game_map)
+    print_map(game_map)
     if exit_flag:
         break
     
