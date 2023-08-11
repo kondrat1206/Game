@@ -8,30 +8,58 @@
 '''
 from random import randint, choice
 
-rows = randint(5, 11)
+rows = randint(15, 16)
 columns  = rows
 
 
-def check_condition(pos_x, pos_y, 
-                    exit_x,exit_y, 
-                    enemy_x, enemy_y, turns, char_sign):
-    win_condition = pos_x == exit_x and pos_y == exit_y
-    loss_condition = pos_x == enemy_x and pos_y == enemy_y
+def check_condition(objects, turns):
+
+    for obj in objects:
+        if obj['type'] == 'char':
+            char = obj
+        elif obj['type'] == 'portal':
+            portal = obj
+        elif obj['type'] == 'enemy':
+            enemy = obj
+            loss_condition = char['x'] == enemy['x'] and char['y'] == enemy['y']
+            if loss_condition:
+                char['sign'] = 'L'
+                print(f'YOU LOSS!!! in {turns} turns')
+                break
+
+    win_condition = char['x'] == portal['x'] and char['y'] == portal['y']
+    
     if win_condition:
-        char_sign = 'W'
+        char['sign'] = 'W'
         print(f'YOU WIN!!! in {turns} turns')
-    if loss_condition:
-        char_sign = 'L'
-        print(f'YOU LOSS!!! in {turns} turns')
-    return char_sign, win_condition or loss_condition
+    
+    return win_condition or loss_condition
 
 
-def generate_map(pos_x, pos_y, char_sign, 
-                 exit_x, exit_y, exit_sign, 
-                 enemy_x, enemy_y, enemy_sign, 
-                 rows=rows, columns=columns):
+def generate_enemies(count):
+
+    enemies = []
+
+    for i in range(count):
+
+        enemy = {"x" : randint(0, (columns - 1)),
+                "y" : randint(0, (rows - 1)),
+                "sign" : 'E',
+                "type" : "enemy"}
+        
+        enemies.append(enemy)
+
+    return enemies
+
+
+
+
+
+
+def generate_map(objects, rows=rows, columns=columns):
 
     game_map = []
+
     for j in range(rows):
         row = []
         for i in range(columns):
@@ -39,25 +67,23 @@ def generate_map(pos_x, pos_y, char_sign,
 
         game_map.append(row)
 
-    game_map[exit_y][exit_x] = exit_sign
-    game_map[enemy_y][enemy_x] = enemy_sign
-    game_map[pos_y][pos_x] = char_sign
+    for obj in objects:
+        game_map[obj['y']][obj['x']] = obj['sign']
 
     return game_map
 
 
-def move(direction, x, y, rows=rows, columns=columns):
+def move(direction, obj, rows=rows, columns=columns):
 
-    if (direction == 'D' or direction == 'd') and y < (columns - 1):
-        y += 1
-    if (direction == 'U' or direction == 'u') and y > 0:
-        y -= 1
-    if (direction == 'R' or direction == 'r') and x < (rows - 1):
-        x += 1
-    if (direction == 'L' or direction == 'l') and x > 0:
-        x -= 1
+    if (direction == 'D' or direction == 'd') and obj['y'] < (columns - 1):
+        obj['y'] += 1
+    if (direction == 'U' or direction == 'u') and obj['y'] > 0:
+        obj['y'] -= 1
+    if (direction == 'R' or direction == 'r') and obj['x'] < (rows - 1):
+        obj['x'] += 1
+    if (direction == 'L' or direction == 'l') and obj['x'] > 0:
+        obj['x'] -= 1
     
-    return(x, y)
 
 
 def print_map(game_map):
@@ -65,38 +91,46 @@ def print_map(game_map):
         print(f'|{"|".join(row)}|')
 
 
-pos_x = randint(0, (columns - 1))
-pos_y = randint(0, (rows - 1))
-char_sign = 'X'
+char = {"x" : randint(0, (columns - 1)),
+        "y" : randint(0, (rows - 1)),
+        "sign" : 'X',
+        "type" : "char"}
 
-enemy_x = randint(0, (columns - 1))
-enemy_y = randint(0, (rows - 1))
-enemy_sign = 'E'
 
-exit_x = randint(0, (columns - 1))
-exit_y = randint(0, (rows - 1))
-exit_sign = 'O'
+portal = {"x" : randint(0, (columns - 1)),
+          "y" : randint(0, (rows - 1)),
+          "sign" : 'O',
+          "type" : "portal"}
+
+enemies = generate_enemies(5)
+
+objects = [char, portal] + enemies
 
 turns = 0
 
 
 while True:
 
-    char_sign, exit_flag = check_condition(pos_x, pos_y, 
-                                           exit_x,exit_y, 
-                                           enemy_x, enemy_y, turns, char_sign)
+    exit_flag = check_condition(objects, turns)
     
     
-    game_map = generate_map(pos_x, pos_y, char_sign, 
-                            exit_x, exit_y, exit_sign, 
-                            enemy_x, enemy_y, enemy_sign)
-    #print(game_map)
+    game_map = generate_map(objects)
     print_map(game_map)
+    
     if exit_flag:
         break
-    
-    direction = input('Enter direction (U/D/L/R): ')
-    pos_x, pos_y = move(direction, pos_x, pos_y)
+
+    for obj in objects:
+
+        direction = ''
+
+        if obj['type'] == 'char':
+            direction = input('Enter direction (U/D/L/R): ')
+        elif obj['type'] == 'enemy':
+            direction = choice('udrl')
+        
+        move(direction, obj)
+
     turns += 1
-    enemy_direction = choice('udrl')
-    enemy_x, enemy_y = move(enemy_direction, enemy_x, enemy_y)
+
+    
