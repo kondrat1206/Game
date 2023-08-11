@@ -43,9 +43,9 @@ def generate_enemies(count):
     for i in range(count):
 
         enemy = {"x" : randint(0, (columns - 1)),
-                "y" : randint(0, (rows - 1)),
-                "sign" : 'E',
-                "type" : "enemy"}
+                 "y" : randint(0, (rows - 1)),
+                 "sign" : 'E',
+                 "type" : "enemy"}
         
         enemies.append(enemy)
 
@@ -102,7 +102,7 @@ portal = {"x" : randint(0, (columns - 1)),
           "sign" : 'O',
           "type" : "portal"}
 
-enemies = generate_enemies(5)
+enemies = generate_enemies(10)
 
 objects = [char, portal] + enemies
 
