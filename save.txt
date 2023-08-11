@@ -1,0 +1,14 @@
+14 14
+1
+13 5 X char
+1 10 O portal
+8 2 E enemy
+9 1 E enemy
+0 6 E enemy
+7 10 E enemy
+13 9 E enemy
+1 8 E enemy
+13 8 E enemy
+10 9 E enemy
+5 9 E enemy
+6 6 E enemy

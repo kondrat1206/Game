@@ -8,8 +8,68 @@
 '''
 from random import randint, choice
 
-rows = randint(15, 16)
-columns  = rows
+
+def load():
+    # 0 0 X char 8
+    objects = []
+    with open('save.txt', 'r') as file:
+        for i, line in enumerate(file):
+            if i == 0:
+                map_size = line.strip().split()
+                rows, columns = int(map_size[0]), int(map_size[1])
+            elif i == 1:
+                turns = int(line.strip())
+            else:
+                data = line.strip().split()
+                obj = {}
+                obj['x'] = int(data[0])
+                obj['y'] = int(data[1])
+                obj['sign'] = data[2]
+                obj['type'] = data[3]
+                objects.append(obj)
+
+    return objects, rows, columns, turns
+
+
+def generate_enemies(count):
+
+    enemies = []
+
+    for i in range(count):
+
+        enemy = {"x" : randint(0, (columns - 1)),
+                 "y" : randint(0, (rows - 1)),
+                 "sign" : 'E',
+                 "type" : "enemy"}
+        
+        enemies.append(enemy)
+
+    return enemies
+
+
+is_load = input("Do you want to load a game? (y/n) ")
+
+if is_load.casefold() == 'y':
+    objects, rows, columns, turns = load()
+else:
+    rows = randint(10, 16)
+    columns  = rows
+    char = {"x" : randint(0, (columns - 1)),
+            "y" : randint(0, (rows - 1)),
+            "sign" : 'X',
+            "type" : "char"}
+
+
+    portal = {"x" : randint(0, (columns - 1)),
+          "y" : randint(0, (rows - 1)),
+          "sign" : 'O',
+          "type" : "portal"}
+
+    enemies = generate_enemies(10)
+
+    objects = [char, portal] + enemies
+
+    turns = 0
 
 
 def check_condition(objects, turns):
@@ -34,25 +94,6 @@ def check_condition(objects, turns):
         print(f'YOU WIN!!! in {turns} turns')
     
     return win_condition or loss_condition
-
-
-def generate_enemies(count):
-
-    enemies = []
-
-    for i in range(count):
-
-        enemy = {"x" : randint(0, (columns - 1)),
-                 "y" : randint(0, (rows - 1)),
-                 "sign" : 'E',
-                 "type" : "enemy"}
-        
-        enemies.append(enemy)
-
-    return enemies
-
-
-
 
 
 
@@ -85,35 +126,30 @@ def move(direction, obj, rows=rows, columns=columns):
         obj['x'] -= 1
     
 
-
 def print_map(game_map):
     for row in game_map:
         print(f'|{"|".join(row)}|')
 
 
-char = {"x" : randint(0, (columns - 1)),
-        "y" : randint(0, (rows - 1)),
-        "sign" : 'X',
-        "type" : "char"}
+def save(objects, rows, columns, turns):
+    with open('save.txt', 'w') as file:
+        file.write(f"{rows} {columns}\n")
+        file.write(f"{turns}\n")
+        
+        for obj in objects:
+            file.write(f"{obj['x']} {obj['y']} {obj['sign']} {obj['type']}\n")
 
 
-portal = {"x" : randint(0, (columns - 1)),
-          "y" : randint(0, (rows - 1)),
-          "sign" : 'O',
-          "type" : "portal"}
 
-enemies = generate_enemies(10)
 
-objects = [char, portal] + enemies
 
-turns = 0
+
+
 
 
 while True:
 
     exit_flag = check_condition(objects, turns)
-    
-    
     game_map = generate_map(objects)
     print_map(game_map)
     
@@ -132,5 +168,7 @@ while True:
         move(direction, obj)
 
     turns += 1
+    
+    save(objects, rows, columns, turns)
 
     
